@@ -45,3 +45,11 @@ jobs:
           override: true
       - run: cargo install cargo-readme
       - run: cargo readme > README.md && git diff --exit-code
+
+  check-nightly-features:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: enarx/nightly-features@master
+      with:
+        allowed_features: ''
