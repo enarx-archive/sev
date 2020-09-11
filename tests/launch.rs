@@ -2,8 +2,6 @@
 
 #![cfg(feature = "openssl")]
 
-mod common;
-
 use sev::certs::Chain;
 use sev::firmware::Firmware;
 use sev::launch::{HeaderFlags, Launcher, Policy};
@@ -16,9 +14,10 @@ use kvm_bindings::kvm_userspace_memory_region;
 use kvm_ioctls::{Kvm, VcpuExit};
 use mmarinus::{perms, Kind, Map};
 use serial_test::serial;
+use sev_cache::{Cache, FileLock};
 
 use std::convert::TryFrom;
-use std::fs::File;
+use std::io::Result;
 
 const CODE: &[u8] = &[
     0xf4, // hlt
@@ -44,27 +43,29 @@ fn __get_cert_chain(sev: &mut Firmware) -> Chain {
     Chain { sev: platform, ca }
 }
 
-fn get_cert_chain(sev: &mut Firmware) -> Chain {
-    let cached_chain = common::cached_chain_path().unwrap();
+fn get_cert_chain(sev: &mut Firmware) -> (Chain, FileLock) {
+    let cache = sev_cache::User::new().unwrap();
 
-    File::open(cached_chain.clone())
-        .and_then(|mut f| Chain::decode(&mut f, ()))
-        .unwrap_or_else(|_| {
+    let cached_chain: Result<(Chain, FileLock)> = cache
+        .read_lock()
+        .and_then(|mut f| Chain::decode(&mut f.file, ()))
+        .or_else(|_| {
             use codicon::Encoder;
 
+            let mut lock = cache.create().unwrap();
             let chain = __get_cert_chain(sev);
+            chain.encode(&mut lock.file, ()).unwrap();
 
-            let time = std::time::Instant::now().elapsed().as_nanos();
-            let tmp_path = format!("sev-{}.chain", time);
-            let mut tmp_file = File::create(&tmp_path).unwrap();
-            chain.encode(&mut tmp_file, ()).unwrap();
-
-            let directories = cached_chain.parent().unwrap();
-            std::fs::create_dir_all(directories).unwrap();
-            std::fs::rename(tmp_path, cached_chain).unwrap();
-
-            chain
+            Ok(chain)
         })
+        .and_then(|_| {
+            let mut lock = cache.read_lock().unwrap();
+            let chain = Chain::decode(&mut lock.file, ()).unwrap();
+
+            Ok((chain, lock))
+        });
+
+    cached_chain.unwrap()
 }
 
 #[cfg_attr(not(has_sev), ignore)]
@@ -73,7 +74,7 @@ fn get_cert_chain(sev: &mut Firmware) -> Chain {
 fn sev() {
     let mut sev = Firmware::open().unwrap();
     let build = sev.platform_status().unwrap().build;
-    let chain = get_cert_chain(&mut sev);
+    let (chain, _lock) = get_cert_chain(&mut sev);
 
     let policy = Policy::default();
     let session = Session::try_from(policy).unwrap();

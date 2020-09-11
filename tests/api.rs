@@ -1,18 +1,41 @@
 // SPDX-License-Identifier: Apache-2.0
 
-mod common;
-
 use sev::{certs::sev::Usage, firmware::Firmware, Build, Version};
 
 use serial_test::serial;
+use sev_cache::{Cache, FileLock};
+
+// A simple type to get an exclusive lock on the cached certificate chain
+// (if there is one) for the duration of its scope. At the end of its scope
+// it will remove the cached certificate chain because it has been invalidated
+// by the operations of the "dangerous_test".
+struct DangerousTest(FileLock);
+
+impl DangerousTest {
+    fn new() -> Self {
+        let cache = sev_cache::User::new().unwrap();
+
+        Self(cache.create().unwrap())
+    }
+}
+
+impl Drop for DangerousTest {
+    fn drop(&mut self) {
+        use std::fs::remove_file;
+
+        let cache = sev_cache::User::new().unwrap();
+        let path = cache.path();
+        let _ = remove_file(path);
+    }
+}
 
 #[cfg_attr(not(all(has_sev, feature = "dangerous_tests")), ignore)]
 #[test]
 #[serial]
 fn platform_reset() {
+    let _ = DangerousTest::new();
     let mut fw = Firmware::open().unwrap();
     fw.platform_reset().unwrap();
-    common::rm_cached_chain();
 }
 
 #[cfg_attr(not(has_sev), ignore)]
@@ -36,9 +59,9 @@ fn platform_status() {
 #[test]
 #[serial]
 fn pek_generate() {
+    let _ = DangerousTest::new();
     let mut fw = Firmware::open().unwrap();
     fw.pek_generate().unwrap();
-    common::rm_cached_chain();
 }
 
 #[cfg_attr(not(has_sev), ignore)]
@@ -53,9 +76,9 @@ fn pek_csr() {
 #[test]
 #[serial]
 fn pdh_generate() {
+    let _ = DangerousTest::new();
     let mut fw = Firmware::open().unwrap();
     fw.pdh_generate().unwrap();
-    common::rm_cached_chain();
 }
 
 #[cfg_attr(not(has_sev), ignore)]
@@ -81,6 +104,8 @@ fn pdh_cert_export() {
 #[serial]
 fn pek_cert_import() {
     use sev::certs::{sev::Certificate, Signer, Verifiable};
+
+    let _ = DangerousTest::new();
 
     let mut fw = Firmware::open().unwrap();
 

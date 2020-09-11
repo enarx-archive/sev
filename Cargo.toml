@@ -32,6 +32,7 @@ bitfield = "0.13"
 iocuddle = "0.1"
 
 [dev-dependencies]
+sev-cache = { git = "https://github.com/connorkuehl/sev-cache", rev = "3163bf2" }
 dirs = "3.0"
 kvm-bindings = "0.3"
 kvm-ioctls = "0.5"
