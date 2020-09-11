@@ -2,7 +2,6 @@
 
 use sev::{certs::sev::Usage, firmware::Firmware, Build, Version};
 
-use serial_test::serial;
 use sev_cache::{Cache, FileLock};
 
 // A simple type to get an exclusive lock on the cached certificate chain
@@ -31,7 +30,6 @@ impl Drop for DangerousTest {
 
 #[cfg_attr(not(all(has_sev, feature = "dangerous_tests")), ignore)]
 #[test]
-#[serial]
 fn platform_reset() {
     let _ = DangerousTest::new();
     let mut fw = Firmware::open().unwrap();
@@ -57,7 +55,6 @@ fn platform_status() {
 
 #[cfg_attr(not(all(has_sev, feature = "dangerous_tests")), ignore)]
 #[test]
-#[serial]
 fn pek_generate() {
     let _ = DangerousTest::new();
     let mut fw = Firmware::open().unwrap();
@@ -74,7 +71,6 @@ fn pek_csr() {
 
 #[cfg_attr(not(all(has_sev, feature = "dangerous_tests")), ignore)]
 #[test]
-#[serial]
 fn pdh_generate() {
     let _ = DangerousTest::new();
     let mut fw = Firmware::open().unwrap();
@@ -101,7 +97,6 @@ fn pdh_cert_export() {
 #[cfg(feature = "openssl")]
 #[cfg_attr(not(all(has_sev, feature = "dangerous_tests")), ignore)]
 #[test]
-#[serial]
 fn pek_cert_import() {
     use sev::certs::{sev::Certificate, Signer, Verifiable};
 
