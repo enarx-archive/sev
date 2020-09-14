@@ -4,6 +4,8 @@ jobs:
   sw:
     name: sw ${{ matrix.toolchain }} ${{ matrix.profile.name }} ${{ matrix.features }}
     runs-on: ubuntu-latest
+    env:
+        SEV_CHAIN: ~/.cache/amd-sev/chain
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
@@ -32,6 +34,8 @@ jobs:
   hw:
     name: hw ${{ matrix.toolchain }} ${{ matrix.profile.name }} ${{ matrix.features }}
     runs-on: [self-hosted, linux, sev]
+    env:
+        SEV_CHAIN: ~/.cache/amd-sev/chain
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1

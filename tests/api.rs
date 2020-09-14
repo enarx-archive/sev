@@ -1,10 +1,18 @@
 // SPDX-License-Identifier: Apache-2.0
 
-mod common;
-
 use sev::{certs::sev::Usage, firmware::Firmware, Build, Version};
 
 use serial_test::serial;
+
+#[inline(always)]
+fn rm_cached_chain() {
+    use std::{fs, path};
+
+    let path = env!("SEV_CHAIN");
+    if path::Path::new(&path).exists() {
+        fs::remove_file(path).unwrap();
+    }
+}
 
 #[cfg_attr(not(all(has_sev, feature = "dangerous_tests")), ignore)]
 #[test]
@@ -12,7 +20,7 @@ use serial_test::serial;
 fn platform_reset() {
     let mut fw = Firmware::open().unwrap();
     fw.platform_reset().unwrap();
-    common::rm_cached_chain();
+    rm_cached_chain();
 }
 
 #[cfg_attr(not(has_sev), ignore)]
@@ -38,7 +46,7 @@ fn platform_status() {
 fn pek_generate() {
     let mut fw = Firmware::open().unwrap();
     fw.pek_generate().unwrap();
-    common::rm_cached_chain();
+    rm_cached_chain();
 }
 
 #[cfg_attr(not(has_sev), ignore)]
@@ -55,7 +63,7 @@ fn pek_csr() {
 fn pdh_generate() {
     let mut fw = Firmware::open().unwrap();
     fw.pdh_generate().unwrap();
-    common::rm_cached_chain();
+    rm_cached_chain();
 }
 
 #[cfg_attr(not(has_sev), ignore)]

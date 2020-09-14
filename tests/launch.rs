@@ -2,8 +2,6 @@
 
 #![cfg(feature = "openssl")]
 
-mod common;
-
 use sev::certs::Chain;
 use sev::firmware::Firmware;
 use sev::launch::{HeaderFlags, Launcher, Policy};
@@ -19,6 +17,7 @@ use serial_test::serial;
 
 use std::convert::TryFrom;
 use std::fs::File;
+use std::path::PathBuf;
 
 const CODE: &[u8] = &[
     0xf4, // hlt
@@ -45,7 +44,7 @@ fn __get_cert_chain(sev: &mut Firmware) -> Chain {
 }
 
 fn get_cert_chain(sev: &mut Firmware) -> Chain {
-    let cached_chain = common::cached_chain_path().unwrap();
+    let cached_chain = PathBuf::from(env!("SEV_CHAIN"));
 
     File::open(cached_chain.clone())
         .and_then(|mut f| Chain::decode(&mut f, ()))
