@@ -7,7 +7,6 @@ mod v1;
 use std::mem::size_of;
 
 use serde::{de, ser};
-use serde_bytes::{ByteBuf, Bytes};
 
 use super::*;
 
@@ -114,7 +113,7 @@ impl<'de> de::Deserialize<'de> for Certificate {
     {
         use codicon::Decoder;
 
-        let bytes = ByteBuf::deserialize(deserializer)?;
+        let bytes: Vec<u8> = de::Deserialize::deserialize(deserializer)?;
         Self::decode(bytes.as_slice(), ()).map_err(serde::de::Error::custom)
     }
 }
@@ -124,11 +123,15 @@ impl ser::Serialize for Certificate {
     where
         S: ser::Serializer,
     {
+        use ser::SerializeSeq;
         use std::slice::from_raw_parts;
 
         let bytes = unsafe { from_raw_parts(self as *const Self as *const u8, size_of::<Self>()) };
-        let bytes = Bytes::new(bytes);
-        bytes.serialize(serializer)
+        let mut seq = serializer.serialize_seq(Some(bytes.len()))?;
+        for b in bytes {
+            seq.serialize_element(b)?;
+        }
+        seq.end()
     }
 }
 
