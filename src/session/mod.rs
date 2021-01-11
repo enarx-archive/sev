@@ -128,14 +128,14 @@ impl Session<Initialized> {
         sig.update(&self.policy.bytes())?;
         sig.update(&digest)?;
         sig.update(&msr.mnonce)?;
-
-        println!();
-        println!("(sev) Digest = {:?}", digest);
-        println!("(sev) Build = {:?}", build);
-        println!("(sev) Measurement = {:?}", msr);
-        println!("(sev) sig = {:?}", sig.sign_to_vec());
-        println!();
-
+        /*
+                println!();
+                println!("(sev) Digest = {:?}", digest);
+                println!("(sev) Build = {:?}", build);
+                println!("(sev) Measurement = {:?}", msr);
+                println!("(sev) sig = {:?}", sig.sign_to_vec());
+                println!();
+        */
         if sig.sign_to_vec()? != msr.measure {
             println!("Failure on signature equality check!");
             return Err(ErrorKind::InvalidInput.into());
