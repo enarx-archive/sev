@@ -8,6 +8,8 @@ use super::*;
 
 use algo::Algorithm;
 
+use sev_iocuddle::util::*;
+
 #[repr(C)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub struct Certificate {

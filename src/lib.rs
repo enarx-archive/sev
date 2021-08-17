@@ -46,34 +46,18 @@ pub mod session;
 mod util;
 
 pub use util::cached_chain;
-use util::{TypeLoad, TypeSave};
 
 #[cfg(feature = "openssl")]
 use certs::sev;
 use certs::{builtin, ca};
 
 use serde::{Deserialize, Serialize};
+use sev_iocuddle::sev::Version;
+use sev_iocuddle::util::*;
 
 #[cfg(feature = "openssl")]
 use std::convert::TryFrom;
 use std::io::{Read, Write};
-
-/// Information about the SEV platform version.
-#[repr(C)]
-#[derive(Copy, Clone, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
-pub struct Version {
-    /// The major version number.
-    pub major: u8,
-
-    /// The minor version number.
-    pub minor: u8,
-}
-
-impl std::fmt::Display for Version {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "{}.{}", self.major, self.minor)
-    }
-}
 
 /// A description of the SEV platform's build information.
 #[repr(C)]

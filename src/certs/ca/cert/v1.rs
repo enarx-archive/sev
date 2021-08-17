@@ -5,6 +5,8 @@ use super::*;
 #[cfg(feature = "openssl")]
 use openssl::hash;
 
+use sev_iocuddle::util::*;
+
 const NAPLES_ARK_SIG: &[u8] = include_bytes!("../../../../tests/naples/ark.cert.sig");
 const NAPLES_ARK: Preamble = Preamble {
     ver: 1u32.to_le(),

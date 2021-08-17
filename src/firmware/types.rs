@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
-use crate::Version;
-
 use crate::certs::sev;
-
+use sev_iocuddle::sev::Version;
 use std::marker::PhantomData;
 
 /// Reset the platform's persistent state.

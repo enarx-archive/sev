@@ -9,6 +9,8 @@ use super::{Measurement, Secret, Start};
 use crate::kvm::types::*;
 use crate::launch::linux::ioctl::*;
 
+use sev_iocuddle::kvm::Command;
+
 use std::io::Result;
 use std::mem::MaybeUninit;
 use std::os::unix::io::AsRawFd;

@@ -15,6 +15,7 @@ pub use launcher::{Launcher, Measured, New, Started};
 use super::*;
 use bitflags::bitflags;
 use serde::{Deserialize, Serialize};
+use sev_iocuddle::util::*;
 
 bitflags! {
     /// Configurable SEV Policy options.

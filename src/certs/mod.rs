@@ -17,7 +17,6 @@ use std::io::*;
 
 pub use chain::Chain;
 
-use crate::util::*;
 #[cfg(feature = "openssl")]
 use util::*;
 

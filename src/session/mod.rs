@@ -211,7 +211,8 @@ impl Session<Verified> {
 #[cfg(test)]
 mod initialized {
     use super::*;
-    use crate::{launch, session::Session, Build, Version};
+    use crate::{launch, session::Session, Build};
+    use sev_iocuddle::sev::Version;
 
     #[test]
     fn session() {

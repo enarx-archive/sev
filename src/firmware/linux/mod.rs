@@ -4,6 +4,9 @@
 
 mod ioctl;
 
+use sev_iocuddle::error::*;
+use sev_iocuddle::sev::*;
+
 use std::fs::{File, OpenOptions};
 use std::mem::MaybeUninit;
 use std::os::unix::io::{AsRawFd, RawFd};

@@ -34,6 +34,7 @@ codicon = "3.0"
 bitfield = "0.13"
 dirs = "3.0"
 iocuddle = "0.1"
+sev-iocuddle = { git = "https://github.com/enarx/sev-iocuddle", branch = "master" }
 
 [dev-dependencies]
 dirs = "3.0"

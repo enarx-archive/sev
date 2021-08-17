@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use sev::cached_chain;
-use sev::{certs::sev::Usage, firmware::Firmware, Build, Version};
+use sev::{certs::sev::Usage, firmware::Firmware, Build};
+
+use sev_iocuddle::sev::Version;
 
 use serial_test::serial;
 

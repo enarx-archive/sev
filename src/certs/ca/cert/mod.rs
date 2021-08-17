@@ -8,6 +8,7 @@ use std::mem::size_of;
 
 use serde::{de, ser};
 use serde_bytes::{ByteBuf, Bytes};
+use sev_iocuddle::util::*;
 
 use super::*;
 
