@@ -71,6 +71,7 @@ impl<'a, U: AsRawFd, V: AsRawFd> Launcher<'a, Started, U, V> {
         LAUNCH_UPDATE_DATA
             .ioctl(self.kvm, &mut cmd)
             .map_err(|e| cmd.encapsulate(e))?;
+        ENC_REG_REGION.ioctl(self.kvm, &KvmEncRegion::new(data))?;
         Ok(())
     }
 
