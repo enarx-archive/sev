@@ -39,7 +39,7 @@
 
 pub mod certs;
 pub mod firmware;
-pub mod kvm;
+pub(crate) mod kvm;
 pub mod launch;
 #[cfg(feature = "openssl")]
 pub mod session;
