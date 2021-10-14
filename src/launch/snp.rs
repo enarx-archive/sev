@@ -9,6 +9,7 @@ pub use crate::launch::{
 };
 
 use crate::kvm::types::*;
+#[cfg(target_os = "linux")]
 use crate::launch::linux::ioctl::*;
 
 use std::io::Result;

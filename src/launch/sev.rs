@@ -7,6 +7,7 @@
 use super::{Measurement, Secret, Start};
 
 use crate::kvm::types::*;
+#[cfg(target_os = "linux")]
 use crate::launch::linux::ioctl::*;
 pub use crate::launch::{HeaderFlags, Policy, PolicyFlags};
 
