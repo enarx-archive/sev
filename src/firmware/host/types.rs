@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use crate::certs::sev;
+use crate::firmware::TcbVersion;
 use crate::Version;
 
 use std::marker::PhantomData;
@@ -150,26 +151,6 @@ impl<'a> GetId<'a> {
     pub fn as_slice(&self) -> &[u8] {
         unsafe { std::slice::from_raw_parts(self.id_addr as *const u8, self.id_len as _) }
     }
-}
-
-/// TcbVersion represents the version of the firmware.
-///
-/// (Chapter 2.2; Table 3)
-#[derive(Clone, Debug, Default, PartialEq)]
-#[repr(C)]
-pub struct TcbVersion {
-    /// Current bootloader version.
-    /// SVN of PSP bootloader.
-    pub bootloader: u8,
-    /// Current PSP OS version.
-    /// SVN of PSP operating system.
-    pub tee: u8,
-    _reserved: [u8; 4],
-    /// Version of the SNP firmware.
-    /// Security Version Number (SVN) of SNP firmware.
-    pub snp: u8,
-    /// Lowest current patch level of all the cores.
-    pub microcode: u8,
 }
 
 /// Query the SEV-SNP platform status.

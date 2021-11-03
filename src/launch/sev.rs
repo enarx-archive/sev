@@ -290,7 +290,7 @@ impl codicon::Encoder<()> for Secret {
 
 /// A measurement of the SEV guest.
 #[repr(C)]
-#[derive(Copy, Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
+#[derive(Copy, Clone, Debug, Default, PartialEq, Eq, Deserialize, Serialize)]
 pub struct Measurement {
     /// The measurement.
     pub measure: [u8; 32],

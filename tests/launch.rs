@@ -3,7 +3,7 @@
 #![cfg(feature = "openssl")]
 
 use sev::cached_chain;
-use sev::firmware::Firmware;
+use sev::firmware::host::Firmware;
 use sev::launch::sev::*;
 use sev::session::Session;
 
