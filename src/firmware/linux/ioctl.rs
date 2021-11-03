@@ -4,6 +4,7 @@
 //! (SEV) platform. These ioctls are exported by the Linux kernel.
 
 use crate::firmware::types::*;
+use crate::firmware::SnpGuestReqInput;
 use crate::impl_const_id;
 
 use iocuddle::*;
@@ -24,9 +25,16 @@ impl_const_id! {
     GetId<'_> = 8, /* GET_ID2 is 8, the deprecated GET_ID ioctl is 7 */
 
     SnpPlatformStatus = 9,
+
+    // Guest commands.
+    SnpGetReport = 0,
 }
 
 const SEV: Group = Group::new(b'S');
+
+/// Although the SEV group can be used, distinguish guest ioctls from host ioctls by including the
+/// SEV_GUEST group.
+const SEV_GUEST: Group = Group::new(b'S');
 
 /// Resets the SEV platform's persistent state.
 pub const PLATFORM_RESET: Ioctl<WriteRead, &Command<PlatformReset>> = unsafe { SEV.write_read(0) };
@@ -58,6 +66,10 @@ pub const GET_ID: Ioctl<WriteRead, &Command<GetId<'_>>> = unsafe { SEV.write_rea
 /// Return information about the current status and capabilities of the SEV-SNP platform.
 pub const SNP_PLATFORM_STATUS: Ioctl<WriteRead, &Command<SnpPlatformStatus>> =
     unsafe { SEV.write_read(0) };
+
+/// Get the SNP guest attestation report.
+pub const SNP_GET_REPORT: Ioctl<WriteRead, &GuestRequest<SnpGetReport>> =
+    unsafe { SEV_GUEST.write_read(0x0) };
 
 /// The Rust-flavored, FFI-friendly version of `struct sev_issue_cmd` which is
 /// used to pass arguments to the SEV ioctl implementation.
@@ -92,6 +104,25 @@ impl<'a, T: Id> Command<'a, T> {
         Command {
             code: T::ID,
             data: subcmd as *const T as u64,
+            error: 0,
+            _phantom: PhantomData,
+        }
+    }
+}
+
+#[repr(C)]
+pub struct GuestRequest<'a, T: Id> {
+    req: u64,
+    resp: u64,
+    error: u32,
+    _phantom: PhantomData<&'a T>,
+}
+
+impl<'a, T: Id> GuestRequest<'a, T> {
+    pub fn from(subcmd: &'a mut T, req: &SnpGuestReqInput) -> Self {
+        GuestRequest {
+            req: req as *const _ as u64,
+            resp: subcmd as *mut T as u64,
             error: 0,
             _phantom: PhantomData,
         }

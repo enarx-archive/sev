@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use sev::cached_chain;
-use sev::{certs::sev::Usage, firmware::Firmware, Build, Version};
+use sev::firmware::{Firmware, GuestFirmware, SnpGuestReqInput};
+use sev::{certs::sev::Usage, Build, Version};
 
 use serial_test::serial;
 
@@ -154,4 +155,18 @@ fn snp_platform_status() {
         status.tcb.reported_version.bootloader,
         status.state
     );
+}
+
+#[cfg_attr(not(has_sev_guest), ignore)]
+#[test]
+fn snp_guest_get_report() {
+    let mut fw = GuestFirmware::open().unwrap();
+    let req = SnpGuestReqInput {
+        msg_version: 1,
+        user_data: [0; 64],
+    };
+
+    let info = fw.get_report(req).unwrap();
+
+    println!("\n\n{:?}\n\n", info);
 }

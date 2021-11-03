@@ -13,8 +13,7 @@ use std::fmt::Debug;
 use std::{error, io};
 
 #[cfg(target_os = "linux")]
-pub use linux::Firmware;
-
+pub use linux::{Firmware, GuestFirmware};
 pub use types::{PlatformStatusFlags, TcbVersion};
 
 /// There are a number of error conditions that can occur between this
@@ -334,4 +333,14 @@ pub struct SnpStatus {
 
     /// TCB status.
     pub tcb: SnpTcbStatus,
+}
+
+/// MISSING_DOC
+#[repr(C)]
+pub struct SnpGuestReqInput {
+    /// MISSING_DOC
+    pub msg_version: u8,
+
+    /// MISSING_DOC
+    pub user_data: [u8; 64],
 }

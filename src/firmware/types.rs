@@ -202,3 +202,56 @@ pub struct SnpPlatformStatus {
     /// Reported TCB version.
     pub reported_tcb_version: TcbVersion,
 }
+
+/// SNP guest attestation report data.
+#[derive(Debug)]
+#[repr(C)]
+pub struct SnpGetReport {
+    pub version: u32,
+    pub guest_svn: u32,
+    pub policy: u64,
+    pub family_id: [u8; 16],
+    pub image_id: [u8; 16],
+    pub vmpl: u32,
+    pub sig_algo: u32,
+    pub plat_version: u64,
+    pub plat_info: u64,
+    pub rsvd1: u32,
+    pub report_data: [u8; 64],
+    pub measurement: [u8; 48],
+    pub host_data: [u8; 32],
+    pub id_key_digest: [u8; 48],
+    pub author_key_digest: [u8; 48],
+    pub report_id: [u8; 32],
+    pub report_id_ma: [u8; 32],
+    pub reported_tcb: u64,
+    pub rsvd2: [u8; 72],
+    pub chip_id: [u8; 64],
+}
+
+impl Default for SnpGetReport {
+    fn default() -> Self {
+        Self {
+            version: 0,
+            guest_svn: 0,
+            policy: 0,
+            family_id: [0; 16],
+            image_id: [0; 16],
+            vmpl: 0,
+            sig_algo: 0,
+            plat_version: 0,
+            plat_info: 0,
+            rsvd1: 0,
+            report_data: [0; 64],
+            measurement: [0; 48],
+            host_data: [0; 32],
+            id_key_digest: [0; 48],
+            author_key_digest: [0; 48],
+            report_id: [0; 32],
+            report_id_ma: [0; 32],
+            reported_tcb: 0,
+            rsvd2: [0; 72],
+            chip_id: [0; 64],
+        }
+    }
+}
