@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use sev::cached_chain;
-use sev::firmware::guest::{GuestFirmware, SnpGuestReqInput};
-use sev::firmware::host::Firmware;
+use sev::firmware::guest::*;
+use sev::firmware::host::*;
+use sev::firmware::TcbVersion;
 use sev::{certs::sev::Usage, Build, Version};
 
 use serial_test::serial;
@@ -162,12 +163,35 @@ fn snp_platform_status() {
 #[test]
 fn snp_guest_get_report() {
     let mut fw = GuestFirmware::open().unwrap();
-    let req = SnpGuestReqInput {
+    let req = SnpReportRequest {
         msg_version: 1,
         user_data: [0; 64],
     };
 
     let info = fw.get_report(req).unwrap();
+
+    println!("\n\n{:?}\n\n", info);
+}
+
+#[cfg_attr(not(has_sev_guest), ignore)]
+#[test]
+fn snp_guest_get_derived_key() {
+    let mut fw = GuestFirmware::open().unwrap();
+    let key_req_data = SnpDerivedKeyRequest {
+        root_key_select: 0,
+        rsvd: 0,
+        guest_field_select: GuestFieldSelect::MEASUREMENT,
+        vmpl: 0,
+        guest_svn: 0,
+        tcb_version: TcbVersion::default(),
+    };
+
+    let req = SnpDerivedKeyRequestHeader {
+        msg_version: 1,
+        req: key_req_data,
+    };
+
+    let info = fw.get_derived_key(req).unwrap();
 
     println!("\n\n{:?}\n\n", info);
 }

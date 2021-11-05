@@ -27,11 +27,23 @@ impl GuestFirmware {
     /// Get the attestation report.
     pub fn get_report(
         &mut self,
-        req: SnpGuestReqInput,
+        req: SnpReportRequest,
     ) -> Result<SnpReportResponse, Indeterminate<Error>> {
         let mut info = SnpReportResponse::default();
 
         SNP_GET_REPORT.ioctl(&mut self.0, &mut GuestRequest::from(&mut info, &req))?;
+
+        Ok(info)
+    }
+
+    /// Get the derived key.
+    pub fn get_derived_key(
+        &mut self,
+        req: SnpDerivedKeyRequestHeader,
+    ) -> Result<SnpDerivedKeyResponse, Indeterminate<Error>> {
+        let mut info = SnpDerivedKeyResponse::default();
+
+        SNP_GET_DERIVED_KEY.ioctl(&mut self.0, &mut GuestRequest::from(&mut info, &req))?;
 
         Ok(info)
     }
