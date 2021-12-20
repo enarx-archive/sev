@@ -213,6 +213,14 @@ pub struct Session {
     pub policy_mac: [u8; 32],
 }
 
+impl codicon::Encoder<()> for Session {
+    type Error = std::io::Error;
+
+    fn encode(&self, mut writer: impl Write, _: ()) -> std::io::Result<()> {
+        writer.save(self)
+    }
+}
+
 /// Used to establish a secure session with the AMD SP.
 #[repr(C)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
